@@ -36,6 +36,10 @@ MainTab:CreateButton({
     end,
 })
 
+local MainTab = Window:CreateTab("Main", 4483362458)
+MainTab:CreateSection("G.A.G")
+
+
 MainTab:CreateButton({
     Name = "G.A.G Script",
     Callback = function()
