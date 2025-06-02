@@ -20,7 +20,7 @@ local Window = Rayfield:CreateWindow({
         FileName = "Versal2025",
         SaveKey = false,
         GrabKeyFromSite = false,
-        Key = { "Agentducktest" }
+        Key = { "Versal2025"  "Spadezzisalooser" }
     }
 })
 
