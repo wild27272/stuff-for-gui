@@ -39,6 +39,6 @@ MainTab:CreateButton({
 MainTab:CreateButton({
     Name = "G.A.G Script",
     Callback = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/wild27272/da-hood/refs/heads/main/full%20script"))()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/wild27272/grow-a-garden/refs/heads/main/obsucated%20v2"))()
     end,
 })
