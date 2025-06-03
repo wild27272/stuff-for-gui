@@ -24,13 +24,33 @@ local function fetchKeys(url)
     end
 end
 
+local hardcodedFallbackKeys = { "Versal2025", "Spadezzisalooser" }
 local keysUrl = "https://gist.githubusercontent.com/wild27272/f833aecbdf21de14d34bfc51d931dc8c/raw/e5bef7358f0c3cc7833b36d56a01a3a2d68bafb6/versal_keys.txt"
-local keys = fetchKeys(keysUrl)
 
-if not keys or #keys == 0 then
-    print("Using fallback keys.")
-    keys = { "Versal2025", "Spadezzisalooser" }  -- fallback keys here
+local fetchedKeys = fetchKeys(keysUrl) or {}
+
+-- Combine fetched keys and hardcoded fallback keys, avoid duplicates
+local allKeys = {}
+
+local function addKeys(keysTable)
+    for _, key in ipairs(keysTable) do
+        local exists = false
+        for _, existingKey in ipairs(allKeys) do
+            if existingKey == key then
+                exists = true
+                break
+            end
+        end
+        if not exists then
+            table.insert(allKeys, key)
+        end
+    end
 end
+
+addKeys(fetchedKeys)
+addKeys(hardcodedFallbackKeys)
+
+print("Total valid keys loaded: "..#allKeys)
 
 local Window = Rayfield:CreateWindow({
     Name = "Versal new system",
@@ -50,7 +70,14 @@ local Window = Rayfield:CreateWindow({
         FileName = "Versal2025",
         SaveKey = false,
         GrabKeyFromSite = false,
-        Key = keys
+        KeyChecker = function(inputKey)
+            for _, validKey in ipairs(allKeys) do
+                if inputKey == validKey then
+                    return true
+                end
+            end
+            return false
+        end
     }
 })
 
