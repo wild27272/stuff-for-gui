@@ -1,7 +1,37 @@
--- Load Rayfield UI Library
 local Rayfield = loadstring(game:HttpGet("https://raw.githubusercontent.com/SiriusSoftwareLtd/Rayfield/main/source.lua"))()
 
--- Create Rayfield window with Key System
+local function fetchKeys(url)
+    print("Fetching keys from:", url)
+    local success, response = pcall(function()
+        return game:HttpGet(url)
+    end)
+    if success and response then
+        print("Keys fetched successfully.")
+        local keys = {}
+        for key in response:gmatch("[^\r\n]+") do
+            if key ~= "" then
+                table.insert(keys, key)
+                print("Loaded key:", key)
+            end
+        end
+        if #keys == 0 then
+            print("Warning: No keys found in fetched content.")
+        end
+        return keys
+    else
+        warn("Failed to fetch keys: ", tostring(response))
+        return nil
+    end
+end
+
+local keysUrl = "https://gist.githubusercontent.com/wild27272/f833aecbdf21de14d34bfc51d931dc8c/raw/e5bef7358f0c3cc7833b36d56a01a3a2d68bafb6/versal_keys.txt"
+local keys = fetchKeys(keysUrl)
+
+if not keys or #keys == 0 then
+    print("Using fallback keys.")
+    keys = { "Versal2025", "Spadezzisalooser" }  -- fallback keys here
+end
+
 local Window = Rayfield:CreateWindow({
     Name = "Versal new system",
     LoadingTitle = "Loading...",
@@ -20,22 +50,19 @@ local Window = Rayfield:CreateWindow({
         FileName = "Versal2025",
         SaveKey = false,
         GrabKeyFromSite = false,
-        Key = { "Versal2025",  "Spadezzisalooser" }
+        Key = keys
     }
 })
 
--- Create main tab and section
 local MainTab = Window:CreateTab("Main", 4483362458)
 MainTab:CreateSection("Da Hood Script")
 
--- Create button to run your test script
 MainTab:CreateButton({
     Name = "Da Hood Script",
     Callback = function()
         loadstring(game:HttpGet("https://raw.githubusercontent.com/wild27272/da-hood/refs/heads/main/full%20script"))()
     end,
 })
-
 
 MainTab:CreateButton({
     Name = "G.A.G Script",
