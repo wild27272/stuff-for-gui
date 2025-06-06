@@ -1,4 +1,3 @@
-
 -- Load Rayfield UI Library
 local Rayfield = loadstring(game:HttpGet("https://raw.githubusercontent.com/SiriusSoftwareLtd/Rayfield/main/source.lua"))()
 
@@ -7,12 +6,8 @@ local Window = Rayfield:CreateWindow({
     Name = "Versal new system",
     LoadingTitle = "Loading...",
     LoadingSubtitle = "by agent duck",
-    ConfigurationSaving = {
-        Enabled = false
-    },
-    Discord = {
-        Enabled = false
-    },
+    ConfigurationSaving = { Enabled = false },
+    Discord = { Enabled = false },
     KeySystem = true,
     KeySettings = {
         Title = "Enter Key",
@@ -29,7 +24,7 @@ local Window = Rayfield:CreateWindow({
 local MainTab = Window:CreateTab("Main", 4483362458)
 MainTab:CreateSection("Da Hood Script")
 
--- Create button to run Da Hood script
+-- Create buttons
 MainTab:CreateButton({
     Name = "Da Hood Script",
     Callback = function()
@@ -37,7 +32,6 @@ MainTab:CreateButton({
     end,
 })
 
--- Create button to run G.A.G Script
 MainTab:CreateButton({
     Name = "G.A.G Script",
     Callback = function()
@@ -45,7 +39,6 @@ MainTab:CreateButton({
     end,
 })
 
--- Create button to run Rivals Script
 MainTab:CreateButton({
     Name = "Rivals Script",
     Callback = function()
