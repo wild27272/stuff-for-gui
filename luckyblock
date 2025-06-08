@@ -1,0 +1,91 @@
+local DiscordLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/UI-Libs/main/discord%20lib.txt"))()
+
+local win = DiscordLib:Window("Versal lucky block battlegrounds script agent duck")
+
+local serv = win:Server("Main", "http://www.roblox.com/asset/?id=6031075938")
+
+local btns = serv:Channel("Buttons")
+
+-- Spawn Galaxy Button (no notification)
+btns:Button("Spawn Items", function()
+    game:GetService("ReplicatedStorage"):WaitForChild("SpawnGalaxyBlock"):FireServer()
+end)
+
+-- Fly script loader
+local flyScriptLoaded = false
+btns:Button(" Fly Script", function()
+    if not flyScriptLoaded then
+        flyScriptLoaded = true
+        loadstring([[
+            local UserInputService = game:GetService("UserInputService")
+            local RunService = game:GetService("RunService")
+            local player = game.Players.LocalPlayer
+            local character = player.Character or player.CharacterAdded:Wait()
+            local hrp = character:WaitForChild("HumanoidRootPart")
+            local flying = false
+            local speed = 50
+
+            local bv
+
+            local function toggleFly()
+                flying = not flying
+                if flying then
+                    bv = Instance.new("BodyVelocity")
+                    bv.Velocity = Vector3.new(0, 0, 0)
+                    bv.MaxForce = Vector3.new(1e5, 1e5, 1e5)
+                    bv.Parent = hrp
+                else
+                    if bv then
+                        bv:Destroy()
+                        bv = nil
+                    end
+                end
+            end
+
+            UserInputService.InputBegan:Connect(function(input, gameProcessed)
+                if gameProcessed then return end
+                if input.KeyCode == Enum.KeyCode.E then
+                    toggleFly()
+                end
+            end)
+
+            RunService.RenderStepped:Connect(function()
+                if flying and bv then
+                    local moveDirection = Vector3.new()
+                    if UserInputService:IsKeyDown(Enum.KeyCode.W) then
+                        moveDirection = moveDirection + workspace.CurrentCamera.CFrame.LookVector
+                    end
+                    if UserInputService:IsKeyDown(Enum.KeyCode.S) then
+                        moveDirection = moveDirection - workspace.CurrentCamera.CFrame.LookVector
+                    end
+                    if UserInputService:IsKeyDown(Enum.KeyCode.A) then
+                        moveDirection = moveDirection - workspace.CurrentCamera.CFrame.RightVector
+                    end
+                    if UserInputService:IsKeyDown(Enum.KeyCode.D) then
+                        moveDirection = moveDirection + workspace.CurrentCamera.CFrame.RightVector
+                    end
+                    if UserInputService:IsKeyDown(Enum.KeyCode.Space) then
+                        moveDirection = moveDirection + Vector3.new(0,1,0)
+                    end
+                    if UserInputService:IsKeyDown(Enum.KeyCode.LeftShift) then
+                        moveDirection = moveDirection - Vector3.new(0,1,0)
+                    end
+                    if moveDirection.Magnitude > 0 then
+                        bv.Velocity = moveDirection.Unit * speed
+                    else
+                        bv.Velocity = Vector3.new(0,0,0)
+                    end
+                end
+            end)
+        ]])()
+        DiscordLib:Notification("Fly", "Simple fly script loaded! Press E to toggle fly.", "OK")
+    else
+        DiscordLib:Notification("Fly", "Fly script already loaded! Press E to toggle fly.", "OK")
+    end
+end)
+
+-- ESP loader button
+btns:Button("ESP", function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/wild27272/da-hood/refs/heads/main/esp"))()
+    DiscordLib:Notification("ESP", "ESP script loaded!", "OK")
+end)
