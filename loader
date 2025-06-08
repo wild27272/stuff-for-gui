@@ -40,6 +40,13 @@ MainTab:CreateButton({
 })
 
 MainTab:CreateButton({
+    Name = "lucky block Script",
+    Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/wild27272/stuff-for-gui/refs/heads/main/luckyblock"))()
+    end,
+})
+
+MainTab:CreateButton({
     Name = "Rivals Script",
     Callback = function()
         loadstring(game:HttpGet("https://raw.githubusercontent.com/wild27272/stuff-for-gui/main/rivals"))()
