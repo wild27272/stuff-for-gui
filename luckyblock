@@ -89,3 +89,8 @@ btns:Button("ESP", function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/wild27272/da-hood/refs/heads/main/esp"))()
     DiscordLib:Notification("ESP", "ESP script loaded!", "OK")
 end)
+
+btns:Button("Speed", function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/wild27272/da-hood/refs/heads/main/speed"))()
+    DiscordLib:Notification("speed", "speed script loaded", "OK")
+end)
