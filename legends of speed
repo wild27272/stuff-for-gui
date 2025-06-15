@@ -1,0 +1,89 @@
+local DiscordLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/UI-Libs/main/discord%20lib.txt"))()
+
+local win = DiscordLib:Window("Versal Legends Of Speed Script Beta")
+
+-- Create main server tab
+local mainServ = win:Server("Main", "http://www.roblox.com/asset/?id=6031075938")
+
+-- Reference remote events
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local rEvents = ReplicatedStorage:WaitForChild("rEvents")
+local orbEvent = rEvents:WaitForChild("orbEvent")
+-- Removed obbyEvent due to errors
+
+-- ==== MAIN CHANNEL ====
+local mainChan = mainServ:Channel("main")
+
+local gemsToggle = false
+mainChan:Toggle("Inf Gems (City)", false, function(state)
+    gemsToggle = state
+    task.spawn(function()
+        while gemsToggle do
+            orbEvent:FireServer("collectOrb", "Gem", "City")
+            task.wait()
+        end
+    end)
+end)
+
+-- ==== SPEED CHANNEL ====
+local speedChan = mainServ:Channel("speed")
+
+local cityToggle, snowToggle, magmaToggle = false, false, false
+
+local function resetSpeedToggles(except)
+    if except ~= "City" then cityToggle = false end
+    if except ~= "Snow City" then snowToggle = false end
+    if except ~= "Magma City" then magmaToggle = false end
+end
+
+speedChan:Toggle("City", false, function(state)
+    cityToggle = state
+    if state then
+        resetSpeedToggles("City")
+        task.spawn(function()
+            while cityToggle do
+                orbEvent:FireServer("collectOrb", "Red Orb", "City")
+                task.wait()
+            end
+        end)
+    end
+end)
+
+speedChan:Toggle("Snow City", false, function(state)
+    snowToggle = state
+    if state then
+        resetSpeedToggles("Snow City")
+        task.spawn(function()
+            while snowToggle do
+                orbEvent:FireServer("collectOrb", "Red Orb", "Snow City")
+                task.wait()
+            end
+        end)
+    end
+end)
+
+speedChan:Toggle("Magma City", false, function(state)
+    magmaToggle = state
+    if state then
+        resetSpeedToggles("Magma City")
+        task.spawn(function()
+            while magmaToggle do
+                orbEvent:FireServer("collectOrb", "Red Orb", "Magma City")
+                task.wait()
+            end
+        end)
+    end
+end)
+
+-- ==== MISC CHANNEL ====
+local miscChan = mainServ:Channel("misc")
+
+miscChan:Button("ESP", function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/wild27272/da-hood/refs/heads/main/esp"))()
+end)
+
+miscChan:Button("Flight (Bound to E)", function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/wild27272/da-hood/refs/heads/main/flight"))()
+end)
+
+miscChan:Label("Note: Flight is bound to the [ E ] key.")
