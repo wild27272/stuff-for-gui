@@ -1,54 +1,174 @@
--- Load Rayfield UI Library
+-- Load Rayfield UI Library (but don't create window yet)
 local Rayfield = loadstring(game:HttpGet("https://raw.githubusercontent.com/SiriusSoftwareLtd/Rayfield/main/source.lua"))()
 
--- Create Rayfield window with Key System
-local Window = Rayfield:CreateWindow({
-    Name = "Versal new system",
-    LoadingTitle = "Loading...",
-    LoadingSubtitle = "by agent duck",
-    ConfigurationSaving = { Enabled = false },
-    Discord = { Enabled = false },
-    KeySystem = true,
-    KeySettings = {
-        Title = "Enter Key",
-        Subtitle = "Authentication Required",
-        Note = "Join versal scripts for key https://discord.gg/5KzEQKVNde",
-        FileName = "Versal2025",
-        SaveKey = false,
-        GrabKeyFromSite = false,
-        Key = { "Versal2025" }
-    }
-})
+local Players = game:GetService("Players")
+local Player = Players.LocalPlayer
 
--- Create main tab and section
-local MainTab = Window:CreateTab("Main", 4483362458)
-MainTab:CreateSection("Da Hood Script")
+local KEY_LIST_URL = "https://gist.githubusercontent.com/wild27272/5459928890d81c627816b3bfebbea34a/raw/456fe3542aca3d3efcde4ea9f112580b0c61c645/keys.txt"
 
--- Create buttons
-MainTab:CreateButton({
-    Name = "Da Hood Script",
-    Callback = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/wild27272/da-hood/main/full%20script"))()
-    end,
-})
+-- Create simple key input GUI
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "KeyInputGui"
+ScreenGui.ResetOnSpawn = false
+ScreenGui.Parent = Player:WaitForChild("PlayerGui")
 
-MainTab:CreateButton({
-    Name = "G.A.G Script",
-    Callback = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/wild27272/grow-a-garden/main/obsucated%20v2"))()
-    end,
-})
+local Frame = Instance.new("Frame")
+Frame.Size = UDim2.new(0, 350, 0, 170)
+Frame.Position = UDim2.new(0.5, -175, 0.5, -85)
+Frame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+Frame.BorderSizePixel = 0
+Frame.Parent = ScreenGui
 
-MainTab:CreateButton({
-    Name = "lucky block Script",
-    Callback = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/wild27272/stuff-for-gui/refs/heads/main/luckyblock"))()
-    end,
-})
+-- Close Button (X)
+local CloseButton = Instance.new("TextButton")
+CloseButton.Size = UDim2.new(0, 30, 0, 30)
+CloseButton.Position = UDim2.new(1, -35, 0, 5)
+CloseButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+CloseButton.TextColor3 = Color3.new(1,1,1)
+CloseButton.Font = Enum.Font.GothamBold
+CloseButton.TextSize = 24
+CloseButton.Text = "X"
+CloseButton.Parent = Frame
 
-MainTab:CreateButton({
-    Name = "Rivals Script",
-    Callback = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/wild27272/stuff-for-gui/main/rivals"))()
-    end,
-})
+CloseButton.MouseButton1Click:Connect(function()
+    ScreenGui:Destroy()
+end)
+
+local TextLabel = Instance.new("TextLabel")
+TextLabel.Size = UDim2.new(1, -20, 0, 40)
+TextLabel.Position = UDim2.new(0, 10, 0, 10)
+TextLabel.BackgroundTransparency = 1
+TextLabel.TextColor3 = Color3.new(1,1,1)
+TextLabel.Font = Enum.Font.GothamBold
+TextLabel.TextSize = 24
+TextLabel.Text = "Enter Your Key"
+TextLabel.Parent = Frame
+
+local TextBox = Instance.new("TextBox")
+TextBox.Size = UDim2.new(1, -20, 0, 40)
+TextBox.Position = UDim2.new(0, 10, 0, 60)
+TextBox.BackgroundColor3 = Color3.fromRGB(55, 55, 55)
+TextBox.TextColor3 = Color3.new(1,1,1)
+TextBox.Font = Enum.Font.Gotham
+TextBox.TextSize = 20
+TextBox.PlaceholderText = "Paste key here"
+TextBox.ClearTextOnFocus = false
+TextBox.Parent = Frame
+
+local SubmitButton = Instance.new("TextButton")
+SubmitButton.Size = UDim2.new(1, -20, 0, 30)
+SubmitButton.Position = UDim2.new(0, 10, 0, 110)
+SubmitButton.BackgroundColor3 = Color3.fromRGB(70, 130, 180)
+SubmitButton.TextColor3 = Color3.new(1,1,1)
+SubmitButton.Font = Enum.Font.GothamBold
+SubmitButton.TextSize = 20
+SubmitButton.Text = "Submit"
+SubmitButton.Parent = Frame
+
+local function notify(message)
+    -- Basic notification: prints to output and could be improved later
+    print(message)
+end
+
+local function fetchKeys()
+    local success, result = pcall(function()
+        return game:HttpGet(KEY_LIST_URL)
+    end)
+    if success then
+        local keys = {}
+        for line in result:gmatch("[^\r\n]+") do
+            table.insert(keys, line)
+        end
+        -- Removed debug prints here to avoid F9 output spam
+        return keys
+    else
+        print("Failed to fetch keys:", result)
+        return nil
+    end
+end
+
+local function validateKey(key)
+    local keys = fetchKeys()
+    if not keys then
+        notify("Failed to fetch keys list.")
+        return false
+    end
+    for _, validKey in pairs(keys) do
+        if key == validKey then
+            return true
+        end
+    end
+    return false
+end
+
+SubmitButton.MouseButton1Click:Connect(function()
+    local key = TextBox.Text
+    if key == "" then
+        notify("Please enter a key.")
+        return
+    end
+
+    SubmitButton.Text = "Checking..."
+    SubmitButton.Active = false
+
+    if validateKey(key) then
+        notify("Key accepted! Loading GUI...")
+
+        -- Destroy key input GUI
+        ScreenGui:Destroy()
+
+        -- Now create Rayfield window with your buttons:
+        local Window = Rayfield:CreateWindow({
+            Name = "Versal new system",
+            LoadingTitle = "Loading...",
+            LoadingSubtitle = "by agent duck",
+            ConfigurationSaving = { Enabled = false },
+            Discord = { Enabled = false },
+            KeySystem = false,
+        })
+
+        local MainTab = Window:CreateTab("Main", 4483362458)
+        MainTab:CreateSection("Da Hood Script")
+
+        MainTab:CreateButton({
+            Name = "Da Hood Script",
+            Callback = function()
+                loadstring(game:HttpGet("https://raw.githubusercontent.com/wild27272/da-hood/main/full%20script"))()
+            end,
+        })
+
+        MainTab:CreateButton({
+            Name = "G.A.G Script",
+            Callback = function()
+                loadstring(game:HttpGet("https://raw.githubusercontent.com/wild27272/grow-a-garden/main/obsucated%20v2"))()
+            end,
+        })
+
+        MainTab:CreateButton({
+            Name = "Lucky Block Script",
+            Callback = function()
+                loadstring(game:HttpGet("https://raw.githubusercontent.com/wild27272/stuff-for-gui/refs/heads/main/luckyblock"))()
+            end,
+        })
+
+        MainTab:CreateButton({
+            Name = "Rivals Script",
+            Callback = function()
+                loadstring(game:HttpGet("https://raw.githubusercontent.com/wild27272/stuff-for-gui/main/rivals"))()
+            end,
+        })
+
+        MainTab:CreateButton({
+            Name = "Legends of Speed Script",
+            Callback = function()
+                loadstring(game:HttpGet("https://raw.githubusercontent.com/wild27272/stuff-for-gui/refs/heads/main/legends%20of%20speed"))()
+            end,
+        })
+
+    else
+        notify("Invalid key, try again.")
+        SubmitButton.Text = "Submit"
+        SubmitButton.Active = true
+    end
+end)
+
