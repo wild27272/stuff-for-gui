@@ -1,0 +1,146 @@
+--// Load Rayfield UI Library
+local Rayfield = loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
+
+local HttpService = game:GetService("HttpService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+--// Create Window
+local Window = Rayfield:CreateWindow({
+    Name = "Utility Script",
+    LoadingTitle = "UI",
+    LoadingSubtitle = "Script Tools",
+    ConfigurationSaving = {
+        Enabled = false
+    },
+    Discord = {
+        Enabled = false
+    },
+    KeySystem = false
+})
+
+local MainTab = Window:CreateTab("Main", 4483362458)
+
+--// Webhook Input
+local Webhook = ""
+MainTab:CreateInput({
+    Name = "Enter Webhook URL",
+    PlaceholderText = "https://discord.com/api/webhooks/...",
+    RemoveTextAfterFocusLost = false,
+    Callback = function(Text)
+        Webhook = Text
+    end
+})
+
+--// Helper: Send message to webhook in spurts
+local function SendWebhookMessageInChunks(message)
+    local requestFn = syn and syn.request or http and http.request or http_request or request
+    if not requestFn then return end
+
+    for i = 1, #message, 1900 do
+        local chunk = message:sub(i, i + 1899)
+        local payload = {
+            content = "```" .. chunk .. "```"
+        }
+
+        requestFn({
+            Url = Webhook,
+            Method = "POST",
+            Headers = {["Content-Type"] = "application/json"},
+            Body = HttpService:JSONEncode(payload)
+        })
+
+        task.wait(1.2) -- cooldown between requests to avoid spam block
+    end
+end
+
+--// Button: Send ReplicatedStorage Remotes to Webhook
+MainTab:CreateButton({
+    Name = "Send RS Remotes to Webhook",
+    Callback = function()
+        if Webhook == "" then
+            Rayfield:Notify({
+                Title = "Error",
+                Content = "Please enter a valid webhook first.",
+                Duration = 4
+            })
+            return
+        end
+
+        local remotes = {}
+        for _, v in pairs(ReplicatedStorage:GetDescendants()) do
+            if v:IsA("RemoteEvent") or v:IsA("RemoteFunction") then
+                table.insert(remotes, v:GetFullName())
+            end
+        end
+
+        local combined = table.concat(remotes, "\n")
+        SendWebhookMessageInChunks("ReplicatedStorage Remotes:\n" .. combined)
+
+        Rayfield:Notify({
+            Title = "Success",
+            Content = "Remotes sent in chunks to webhook!",
+            Duration = 5
+        })
+    end
+})
+
+--// Code Executor Input
+MainTab:CreateInput({
+    Name = "Execute Lua Code",
+    PlaceholderText = "e.g., game:GetService('Players').LocalPlayer:Kick()",
+    RemoveTextAfterFocusLost = false,
+    Callback = function(code)
+        local success, err = pcall(function()
+            loadstring(code)()
+        end)
+
+        Rayfield:Notify({
+            Title = success and "Executed" or "Error",
+            Content = success and "Code ran successfully." or tostring(err),
+            Duration = 4
+        })
+    end
+})
+
+--// Loadstring Buttons
+MainTab:CreateButton({
+    Name = "Load Infinite Yield",
+    Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()
+    end
+})
+
+MainTab:CreateButton({
+    Name = "Load CMD-X",
+    Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/CMD-X/CMD-X/master/Source"))()
+    end
+})
+
+MainTab:CreateButton({
+    Name = "Load Dex Explorer",
+    Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/peyton2465/Dex/master/out.lua"))()
+    end
+})
+
+MainTab:CreateButton({
+    Name = "Load Hydroxide",
+    Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/wild27272/stuff-for-gui/refs/heads/main/hydroxide"))()
+    end
+})
+
+MainTab:CreateButton({
+    Name = "Load Simple Spy",
+    Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/wild27272/stuff-for-gui/refs/heads/main/simple%20spy"))()
+    end
+})
+
+MainTab:CreateButton({
+    Name = "Load Turtle Spy",
+    Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/wild27272/stuff-for-gui/refs/heads/main/turtle%20spy"))()
+    end
+})
